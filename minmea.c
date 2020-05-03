@@ -241,18 +241,23 @@ bool minmea_scan(const char *sentence, const char *format, ...)
 
             case 't': { // NMEA talker+sentence identifier (char *).
                 // This field is always mandatory.
+                int f;
+
                 if (!field)
                     goto parse_error;
 
                 if (field[0] != '$')
                     goto parse_error;
-                for (int f=0; f<5; f++)
+                // Support any length between 1 and 6
+                if (!minmea_isfield(field[1]))
+                    goto parse_error;
+                for (f=1; f<6; f++)
                     if (!minmea_isfield(field[1+f]))
-                        goto parse_error;
+                        break;
 
                 char *buf = va_arg(ap, char *);
-                memcpy(buf, field+1, 5);
-                buf[5] = '\0';
+                memcpy(buf, field+1, f);
+                buf[f] = '\0';
             } break;
 
             case 'D': { // Date (int, int, int), -1 if empty.
