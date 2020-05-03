@@ -56,6 +56,11 @@ struct minmea_time {
     int microseconds;
 };
 
+struct minmea_leap {
+    int value;
+    bool valid;
+};
+
 struct minmea_sentence_rmc {
     struct minmea_time time;
     bool valid;
@@ -193,6 +198,7 @@ enum minmea_sentence_id minmea_sentence_id(const char *sentence, bool strict);
  * t - talker identifier and type (char *)
  * T - time (struct minmea_time *)
  * D - date (struct minmea_date *)
+ * L - leap second (u-blox specific) with optional 'D' suffix (struct minmea_leap *)
  * Returns true on success. See library source code for details.
  */
 bool minmea_scan(const char *sentence, const char *format, ...);

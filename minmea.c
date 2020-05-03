@@ -318,6 +318,24 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                 time_->microseconds = u;
             } break;
 
+            case 'L': { // Integer value for leap second, with optional suffix 'D'
+                int value = 0;
+                bool valid = true;
+
+                if (field) {
+                    char *endptr;
+                    value = strtol(field, &endptr, 10);
+                    if (*endptr == 'D') {
+                        valid = false;
+                        endptr++;
+                    }
+                    if (minmea_isfield(*endptr))
+                        goto parse_error;
+                }
+
+                *va_arg(ap, struct minmea_leap *) = (struct minmea_leap) {value, valid};
+            } break;
+
             case '_': { // Ignore the field.
             } break;
 
